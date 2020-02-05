@@ -13,7 +13,8 @@ Tests pass with or without clover.
 # Actual behavior:
 
 Test compile fails with clover enabled:
-```> Task :test FAILED
+```
+> Task :test FAILED
 [ant:groovyc] org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed:
 C:\src\github\rmorrise\repro1\grails-app\controllers\repro1\ApplicationController.groovy: 3: unable to resolve class com.mycompany.oldjava.excessive.packagename.length.OldJavaParentClass
  @ line 3, column 1.
