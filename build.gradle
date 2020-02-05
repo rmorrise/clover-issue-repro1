@@ -1,0 +1,127 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "https://repo.grails.org/grails/core" }
+        maven { url "https://artifactory2.cscinfo.com/artifactory/repo2" }
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "org.grails.plugins:hibernate5:${gormVersion}"
+        classpath "org.grails.plugins:views-gradle:2.0.0.RC2"
+//        classpath 'com.bmuschko:gradle-clover-plugin:2.2.3'
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.0.10"
+        classpath "gradle.plugin.com.energizedwork.webdriver-binaries:webdriver-binaries-gradle-plugin:$webdriverBinariesVersion"
+    }
+}
+
+version "0.1"
+group "repro1"
+
+apply plugin: "eclipse"
+apply plugin: "idea"
+apply plugin: "war"
+apply plugin: "org.grails.grails-web"
+apply plugin: "org.grails.plugins.views-json"
+//apply plugin: 'com.bmuschko.clover'
+apply plugin: "com.energizedwork.webdriver-binaries"
+
+repositories {
+    mavenLocal()
+    maven { url "https://repo.grails.org/grails/core" }
+    maven { url "http://artifactory.cscinfo.com/artifactory/libs-snapshots" }
+    maven { url "http://artifactory.cscinfo.com/artifactory/libs-releases" }
+    maven { url "https://artifactory2.cscinfo.com:443/artifactory/libs-release-local" }
+    maven { url "https://artifactory2.cscinfo.com:443/artifactory/plugins-snapshot-local" }
+    maven { url "https://artifactory2.cscinfo.com:443/artifactory/plugins-release-local" }
+}
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
+dependencies {
+//    clover 'org.openclover:clover:4.3.1'
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    compile "org.springframework.boot:spring-boot-starter-logging"
+    compile "org.springframework.boot:spring-boot-autoconfigure"
+    compile "org.grails:grails-core"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework.boot:spring-boot-starter-tomcat"
+    compile "org.grails:grails-plugin-url-mappings"
+    compile "org.grails:grails-plugin-rest"
+    compile "org.grails:grails-plugin-codecs"
+    compile "org.grails:grails-plugin-interceptors"
+    compile "org.grails:grails-plugin-services"
+    compile "org.grails:grails-plugin-datasource"
+    compile "org.grails:grails-plugin-databinding"
+    compile "org.grails:grails-web-boot"
+    compile "org.grails:grails-logging"
+    compile "org.grails.plugins:cache"
+    compile "org.grails.plugins:async"
+    compile "org.grails.plugins:events"
+    compile "org.grails.plugins:hibernate5"
+    compile "org.hibernate:hibernate-core:5.4.10.Final"
+    compile "org.hibernate:hibernate-envers:5.4.11-SNAPSHOT"
+    compile "org.grails.plugins:views-json"
+    compile "org.grails.plugins:views-json-templates"
+    compileOnly "io.micronaut:micronaut-inject-groovy"
+    compile "org.grails:grails-datastore-rest-client:6.1.12.RELEASE"
+    console "org.grails:grails-console"
+    profile "org.grails.profiles:rest-api"
+    runtime "org.glassfish.web:el-impl:2.1.2-b03"
+    runtime 'com.oracle:ojdbc6:11.2.0.3'
+//    runtime "com.h2database:h2"
+    testRuntime "com.h2database:h2"
+    runtime "org.apache.tomcat:tomcat-jdbc"
+    runtime "javax.xml.bind:jaxb-api:2.3.0"
+
+    testCompile "org.grails:grails-gorm-testing-support"
+    testCompile "org.mockito:mockito-core"
+    testCompile "io.micronaut:micronaut-http-client"
+    testCompile "org.grails:grails-web-testing-support"
+
+    testCompile "org.grails.plugins:geb"
+    testRuntime "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+    testRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    testCompile "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
+    testCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
+    testCompile "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+}
+
+grails {
+    // fixes windows issue with build path file names longer than 200 chars
+    pathingJar = true
+}
+
+bootRun {
+    jvmArgs(
+        '-Dspring.output.ansi.enabled=always', 
+        '-noverify', 
+        '-XX:TieredStopAtLevel=1',
+        '-Xmx1024m')
+    sourceResources sourceSets.main
+    String springProfilesActive = 'spring.profiles.active'
+    systemProperty springProfilesActive, System.getProperty(springProfilesActive)
+}
+
+//clover {
+//    excludes = ['**/Application.groovy',
+//                '**/BootStrap.groovy',
+//                '**/UrlMappings.groovy',
+//                '**/*GrailsPlugin.groovy',
+//                '**/*Mock.groovy',
+//    ]
+//
+//    report {
+//        html = true
+//        xml = true
+//    }
+//}
+
+webdriverBinaries {
+    chromedriver "$chromeDriverVersion"
+    geckodriver "$geckoDriverVersion"
+}
